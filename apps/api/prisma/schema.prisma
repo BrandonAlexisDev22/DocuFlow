@@ -14,11 +14,31 @@ datasource db {
 
 
 model User  {
-  id    Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   name      String?
   password  String
-  createdAt DateTime @default(now())
-  updateAt  DateTime  @updatedAt 
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
+  documents Document[]
 }
 
+model Document {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  // Optional text description
+  category    String   // Or use an Enum if categories are fixed
+  fileUrl     String   // Cloud storage URL (e.g., Cloudinary, S3)
+  publicId    String   // Storage identifier for deleting/updating the file
+  fileName    String   // Original name of the uploaded file
+  fileType    String   // MIME type (e.g., "application/pdf", "image/png")
+  fileSize    Int      // File size in bytes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to User
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Improves query performance when fetching a user's documents
+}
