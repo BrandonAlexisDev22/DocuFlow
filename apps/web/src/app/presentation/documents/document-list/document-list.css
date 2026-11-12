@@ -1,0 +1,101 @@
+.alert {
+  align-items: center;
+}
+
+.grow {
+  flex: 1;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.search {
+  position: relative;
+  flex: 1 1 280px;
+}
+
+.search .icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+.search .input {
+  padding-left: 38px;
+}
+
+.filter {
+  flex: 0 1 220px;
+}
+
+.doc-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 420px;
+  color: inherit;
+}
+
+.doc-cell:hover {
+  text-decoration: none;
+}
+
+.doc-cell:hover .doc-name {
+  color: var(--accent-700);
+}
+
+.doc-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.doc-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.col-file,
+.col-date {
+  white-space: nowrap;
+}
+
+.col-actions {
+  width: 1%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.list-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .filter {
+    flex: 1 1 100%;
+  }
+
+  .col-file,
+  .col-date {
+    display: none;
+  }
+
+  .doc-cell {
+    max-width: 200px;
+  }
+}

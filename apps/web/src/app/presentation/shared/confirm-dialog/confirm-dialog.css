@@ -1,0 +1,34 @@
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  color: var(--gray-900);
+}
+
+.dialog::backdrop {
+  background: rgb(11 21 38 / 0.45);
+}
+
+.dialog-body {
+  padding: 24px 24px 8px;
+}
+
+.dialog-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--navy-900);
+}
+
+.dialog-message {
+  margin-top: 8px;
+  color: var(--gray-600);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 24px;
+}

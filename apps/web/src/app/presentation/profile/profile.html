@@ -1,0 +1,52 @@
+<section class="page profile-page">
+  <header>
+    <h1 class="page-title">Mi perfil</h1>
+    <p class="page-subtitle">Información de tu cuenta en DocuFlow.</p>
+  </header>
+
+  @if (loading()) {
+    <div class="card loading-block"><span class="spinner"></span> Cargando perfil…</div>
+  } @else if (error(); as message) {
+    <div class="alert alert-error" role="alert">
+      <app-icon name="alert" />
+      <span class="grow">{{ message }}</span>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (profile(); as user) {
+    <div class="card">
+      <div class="card-body identity">
+        <span class="avatar">{{ initials() }}</span>
+        <div class="identity-text">
+          <h2>{{ user.name }}</h2>
+          <p class="muted">{{ user.email }}</p>
+        </div>
+      </div>
+      <dl class="details">
+        <div>
+          <dt>Nombre completo</dt>
+          <dd>{{ user.name }}</dd>
+        </div>
+        <div>
+          <dt>Correo electrónico</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div>
+          <dt>Miembro desde</dt>
+          <dd>{{ user.createdAt | date: "d 'de' MMMM 'de' y" }}</dd>
+        </div>
+      </dl>
+    </div>
+  }
+
+  <div class="card">
+    <div class="card-body session">
+      <div>
+        <h2 class="card-title">Sesión</h2>
+        <p class="muted">Cierra tu sesión en este dispositivo.</p>
+      </div>
+      <button type="button" class="btn btn-secondary" (click)="logout()">
+        <app-icon name="logout" /> Cerrar sesión
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,92 @@
+<section class="page form-page">
+  <header>
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/documents">Documentos</a>
+      <span>/</span>
+      <span>{{ isEdit() ? 'Editar' : 'Nuevo' }}</span>
+    </nav>
+    <h1 class="page-title">{{ isEdit() ? 'Editar documento' : 'Nuevo documento' }}</h1>
+    <p class="page-subtitle">
+      {{ isEdit() ? 'Actualiza la información del documento.' : 'Registra la información del documento y adjunta su archivo.' }}
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="card loading-block"><span class="spinner"></span> Cargando documento…</div>
+  } @else if (loadError(); as message) {
+    <div class="card empty-state">
+      <app-icon name="alert" />
+      <h3>No se pudo abrir el documento</h3>
+      <p>{{ message }}</p>
+      <a class="btn btn-secondary" routerLink="/documents">Volver a documentos</a>
+    </div>
+  } @else {
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="card-body form">
+        @if (error(); as message) {
+          <div class="alert alert-error" role="alert"><app-icon name="alert" /> {{ message }}</div>
+        }
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="label" for="name">Nombre</label>
+            <input id="name" class="input" formControlName="name" placeholder="Ej. Contrato de servicios 2026"
+              maxlength="150" [class.invalid]="isInvalid('name')" />
+            @if (isInvalid('name')) {
+              <span class="field-error">
+                {{ form.controls.name.hasError('required') ? 'El nombre es obligatorio.' : 'Máximo 150 caracteres.' }}
+              </span>
+            }
+          </div>
+
+          <div class="field">
+            <label class="label" for="category">Categoría</label>
+            <select id="category" class="select" formControlName="category" [class.invalid]="isInvalid('category')">
+              <option [ngValue]="null" disabled>Selecciona una categoría</option>
+              @for (option of categories; track option.value) {
+                <option [ngValue]="option.value">{{ option.label }}</option>
+              }
+            </select>
+            @if (isInvalid('category')) {
+              <span class="field-error">Selecciona una categoría.</span>
+            }
+          </div>
+
+          <div class="field full">
+            <label class="label" for="description">Descripción <span class="optional">(opcional)</span></label>
+            <textarea id="description" class="textarea" formControlName="description" maxlength="500"
+              placeholder="Agrega detalles que ayuden a identificar el documento" [class.invalid]="isInvalid('description')"></textarea>
+            <span class="field-hint counter">{{ form.controls.description.value.length }}/500</span>
+          </div>
+
+          <div class="field full">
+            <span class="label">Archivo <span class="optional">(opcional)</span></span>
+            @if (document()?.fileName; as fileName) {
+              <div class="current-file">
+                <span class="file-tag">{{ fileName | fileExtension }}</span>
+                <span class="current-info">
+                  <span class="truncate">{{ fileName }}</span>
+                  <span class="muted">{{ document()?.fileSize | fileSize }}</span>
+                </span>
+              </div>
+              <span class="field-hint">El documento ya tiene un archivo adjunto. Para reemplazarlo, crea un documento nuevo.</span>
+            } @else {
+              <app-file-picker [file]="file()" [disabled]="saving()" (fileChange)="file.set($event)" />
+            }
+          </div>
+        </div>
+      </div>
+
+      <footer class="form-footer form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner"></span> {{ file() ? 'Guardando y subiendo…' : 'Guardando…' }}
+          } @else {
+            {{ isEdit() ? 'Guardar cambios' : 'Crear documento' }}
+          }
+        </button>
+      </footer>
+    </form>
+  }
+</section>

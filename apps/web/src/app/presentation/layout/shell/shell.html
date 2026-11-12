@@ -1,0 +1,57 @@
+<aside class="sidebar" [class.open]="menuOpen()" aria-label="Navegación principal">
+  <div class="sidebar-header">
+    <a routerLink="/dashboard" class="brand">
+      <span class="brand-mark"><app-icon name="files" /></span>
+      DocuFlow
+    </a>
+    <button type="button" class="icon-btn close-menu" (click)="menuOpen.set(false)" aria-label="Cerrar menú">
+      <app-icon name="close" />
+    </button>
+  </div>
+
+  <nav class="nav">
+    <span class="nav-section">Menú</span>
+    @for (item of navItems; track item.path) {
+      <a class="nav-link" [routerLink]="item.path" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact }" ariaCurrentWhenActive="page">
+        <app-icon [name]="item.icon" />
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="user-card" routerLink="/profile">
+      <span class="avatar">{{ initials() }}</span>
+      <span class="user-info">
+        <span class="user-name truncate">{{ user()?.name }}</span>
+        <span class="user-email truncate">{{ user()?.email }}</span>
+      </span>
+    </a>
+    <button type="button" class="nav-link logout" (click)="logout()">
+      <app-icon name="logout" />
+      Cerrar sesión
+    </button>
+  </div>
+</aside>
+
+@if (menuOpen()) {
+  <div class="backdrop" (click)="menuOpen.set(false)" aria-hidden="true"></div>
+}
+
+<div class="main">
+  <header class="topbar">
+    <button type="button" class="icon-btn open-menu" (click)="menuOpen.set(true)" aria-label="Abrir menú">
+      <app-icon name="menu" />
+    </button>
+    <span class="topbar-brand">DocuFlow</span>
+    <a class="btn btn-primary btn-sm" routerLink="/documents/new">
+      <app-icon name="plus" />
+      <span class="hide-xs">Nuevo documento</span>
+    </a>
+  </header>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

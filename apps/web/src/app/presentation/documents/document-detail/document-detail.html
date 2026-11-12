@@ -1,0 +1,94 @@
+<section class="page">
+  @if (loading()) {
+    <div class="card loading-block"><span class="spinner"></span> Cargando documento…</div>
+  } @else if (loadError(); as message) {
+    <div class="card empty-state">
+      <app-icon name="alert" />
+      <h3>No se pudo abrir el documento</h3>
+      <p>{{ message }}</p>
+      <a class="btn btn-secondary" routerLink="/documents">Volver a documentos</a>
+    </div>
+  } @else if (document(); as doc) {
+    <header class="page-header">
+      <div class="title-block">
+        <nav class="breadcrumb" aria-label="Ruta de navegación">
+          <a routerLink="/documents">Documentos</a>
+          <span>/</span>
+          <span class="truncate">{{ doc.name }}</span>
+        </nav>
+        <h1 class="page-title">{{ doc.name }}</h1>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-secondary" [routerLink]="['/documents', doc.id, 'edit']"><app-icon name="edit" /> Editar</a>
+        <button type="button" class="btn btn-secondary danger-text" (click)="confirmOpen.set(true)">
+          <app-icon name="trash" /> Eliminar
+        </button>
+      </div>
+    </header>
+
+    @if (notice(); as message) {
+      <div class="alert alert-success" role="status"><app-icon name="check" /> {{ message }}</div>
+    }
+    @if (error(); as message) {
+      <div class="alert alert-error" role="alert"><app-icon name="alert" /> {{ message }}</div>
+    }
+
+    <div class="layout">
+      <section class="card">
+        <header class="card-header"><h2 class="card-title">Información</h2></header>
+        <dl class="card-body details">
+          <div>
+            <dt>Categoría</dt>
+            <dd><span class="badge" [class]="'badge-' + doc.category">{{ doc.category | categoryLabel }}</span></dd>
+          </div>
+          <div>
+            <dt>Creado</dt>
+            <dd>{{ doc.createdAt | date: "d 'de' MMMM 'de' y, HH:mm" }}</dd>
+          </div>
+          <div>
+            <dt>Última actualización</dt>
+            <dd>{{ doc.updatedAt | date: "d 'de' MMMM 'de' y, HH:mm" }}</dd>
+          </div>
+          <div class="full">
+            <dt>Descripción</dt>
+            <dd class="description">{{ doc.description || 'Sin descripción.' }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <header class="card-header"><h2 class="card-title">Archivo</h2></header>
+        <div class="card-body file-body">
+          @if (doc.fileName) {
+            <div class="file-row">
+              <span class="file-tag">{{ doc.fileName | fileExtension }}</span>
+              <span class="file-info">
+                <span class="file-name">{{ doc.fileName }}</span>
+                <span class="muted">{{ doc.fileSize | fileSize }}</span>
+              </span>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" [disabled]="downloading()" (click)="download()">
+              @if (downloading()) { <span class="spinner"></span> Preparando descarga… } @else { <app-icon name="download" /> Descargar }
+            </button>
+            <p class="field-hint">La descarga usa un enlace temporal válido por 5 minutos.</p>
+          } @else {
+            <p class="muted">Este documento aún no tiene un archivo adjunto.</p>
+            <app-file-picker [file]="file()" [disabled]="uploading()" (fileChange)="file.set($event)" />
+            <button type="button" class="btn btn-primary btn-block" [disabled]="!file() || uploading()" (click)="upload()">
+              @if (uploading()) { <span class="spinner"></span> Subiendo archivo… } @else { <app-icon name="upload" /> Subir archivo }
+            </button>
+          }
+        </div>
+      </section>
+    </div>
+
+    <app-confirm-dialog
+      [open]="confirmOpen()"
+      [busy]="deleting()"
+      title="Eliminar documento"
+      [message]="'Se eliminará «' + doc.name + '»' + (doc.fileName ? ' y su archivo adjunto' : '') + '. Esta acción no se puede deshacer.'"
+      (confirmed)="remove()"
+      (cancelled)="confirmOpen.set(false)"
+    />
+  }
+</section>

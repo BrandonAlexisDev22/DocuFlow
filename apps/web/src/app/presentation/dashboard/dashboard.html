@@ -1,0 +1,119 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Hola, {{ firstName() }}</h1>
+      <p class="page-subtitle">Este es el resumen de tus documentos.</p>
+    </div>
+    <div class="quick-actions">
+      <a class="btn btn-secondary" routerLink="/documents">
+        <app-icon name="files" /> Ver documentos
+      </a>
+      <a class="btn btn-primary" routerLink="/documents/new">
+        <app-icon name="plus" /> Nuevo documento
+      </a>
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">
+      <span>{{ message }}</span>
+      <button type="button" class="btn btn-secondary btn-sm retry" (click)="load()">Reintentar</button>
+    </div>
+  }
+
+  <div class="stats">
+    <article class="card stat">
+      <span class="stat-icon"><app-icon name="files" /></span>
+      <div>
+        <p class="stat-label">Documentos totales</p>
+        <p class="stat-value">{{ loading() ? '—' : stats().total }}</p>
+      </div>
+    </article>
+    <article class="card stat">
+      <span class="stat-icon"><app-icon name="paperclip" /></span>
+      <div>
+        <p class="stat-label">Con archivo adjunto</p>
+        <p class="stat-value">{{ loading() ? '—' : stats().withFile }}</p>
+      </div>
+    </article>
+    <article class="card stat">
+      <span class="stat-icon"><app-icon name="clock" /></span>
+      <div>
+        <p class="stat-label">Pendientes de archivo</p>
+        <p class="stat-value">{{ loading() ? '—' : stats().withoutFile }}</p>
+      </div>
+    </article>
+    <article class="card stat">
+      <span class="stat-icon"><app-icon name="storage" /></span>
+      <div>
+        <p class="stat-label">Almacenamiento usado</p>
+        <p class="stat-value">{{ loading() ? '—' : (stats().storage | fileSize) }}</p>
+      </div>
+    </article>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <header class="card-header">
+        <h2 class="card-title">Documentos recientes</h2>
+        <a routerLink="/documents" class="see-all">Ver todos</a>
+      </header>
+
+      @if (loading()) {
+        <div class="loading-block"><span class="spinner"></span> Cargando documentos…</div>
+      } @else if (recent().length === 0) {
+        <div class="empty-state">
+          <app-icon name="file" />
+          <h3>Aún no tienes documentos</h3>
+          <p>Crea tu primer documento para empezar a organizar tus archivos.</p>
+          <a class="btn btn-primary" routerLink="/documents/new"><app-icon name="plus" /> Crear documento</a>
+        </div>
+      } @else {
+        <ul class="recent">
+          @for (doc of recent(); track doc.id) {
+            <li>
+              <a class="recent-item" [routerLink]="['/documents', doc.id]">
+                <span class="file-tag" [class.empty]="!doc.fileName">{{ doc.fileName ? (doc.fileName | fileExtension) : '—' }}</span>
+                <span class="recent-info">
+                  <span class="recent-name truncate">{{ doc.name }}</span>
+                  <span class="muted">{{ doc.createdAt | date: 'd MMM y, HH:mm' }}</span>
+                </span>
+                <span class="badge" [class]="'badge-' + doc.category">{{ doc.category | categoryLabel }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <div class="side">
+      <section class="card">
+        <header class="card-header">
+          <h2 class="card-title">Por categoría</h2>
+        </header>
+        <div class="card-body categories">
+          @for (category of byCategory(); track category.value) {
+            <a class="category" routerLink="/documents" [queryParams]="{ category: category.value }">
+              <span class="category-row">
+                <span>{{ category.label }}</span>
+                <span class="muted">{{ loading() ? '—' : category.count }}</span>
+              </span>
+              <span class="bar"><span class="bar-fill" [style.width.%]="category.percent"></span></span>
+            </a>
+          }
+        </div>
+      </section>
+
+      <section class="card">
+        <header class="card-header">
+          <h2 class="card-title">Tu cuenta</h2>
+        </header>
+        <div class="card-body account">
+          <p class="account-name">{{ user()?.name }}</p>
+          <p class="muted truncate">{{ user()?.email }}</p>
+          <a class="btn btn-secondary btn-sm" routerLink="/profile"><app-icon name="user" /> Ver perfil</a>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

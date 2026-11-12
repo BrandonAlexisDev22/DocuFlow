@@ -1,0 +1,132 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Documentos</h1>
+      <p class="page-subtitle">Consulta, organiza y gestiona tus documentos.</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/documents/new"><app-icon name="plus" /> Nuevo documento</a>
+  </header>
+
+  @if (notice(); as message) {
+    <div class="alert alert-success" role="status">
+      <app-icon name="check" />
+      <span class="grow">{{ message }}</span>
+      <button type="button" class="icon-btn" (click)="notice.set(null)" aria-label="Cerrar aviso"><app-icon name="close" /></button>
+    </div>
+  }
+  @if (error(); as message) {
+    <div class="alert alert-error" role="alert">
+      <app-icon name="alert" />
+      <span class="grow">{{ message }}</span>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="load()">Reintentar</button>
+    </div>
+  }
+
+  <div class="card">
+    <div class="toolbar">
+      <label class="search">
+        <span class="sr-only">Buscar documentos</span>
+        <app-icon name="search" />
+        <input class="input" type="search" placeholder="Buscar por nombre, descripción o archivo…"
+          [value]="search()" (input)="onSearch($event)" />
+      </label>
+      <label class="filter">
+        <span class="sr-only">Filtrar por categoría</span>
+        <select class="select" [value]="category()" (change)="onCategoryChange($event)">
+          <option value="ALL">Todas las categorías</option>
+          @for (option of categories; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-block"><span class="spinner"></span> Cargando documentos…</div>
+    } @else if (documents().length === 0) {
+      <div class="empty-state">
+        <app-icon name="file" />
+        <h3>Aún no tienes documentos</h3>
+        <p>Crea tu primer documento y adjunta un archivo PDF o Word.</p>
+        <a class="btn btn-primary" routerLink="/documents/new"><app-icon name="plus" /> Crear documento</a>
+      </div>
+    } @else if (filtered().length === 0) {
+      <div class="empty-state">
+        <app-icon name="search" />
+        <h3>Sin resultados</h3>
+        <p>Ningún documento coincide con los filtros aplicados.</p>
+        @if (hasFilters()) {
+          <button type="button" class="btn btn-secondary" (click)="clearFilters()">Limpiar filtros</button>
+        }
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Categoría</th>
+              <th class="col-file">Archivo</th>
+              <th class="col-date">Creado</th>
+              <th class="col-actions"><span class="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (doc of filtered(); track doc.id) {
+              <tr>
+                <td>
+                  <a class="doc-cell" [routerLink]="['/documents', doc.id]">
+                    <span class="file-tag" [class.empty]="!doc.fileName">{{ doc.fileName ? (doc.fileName | fileExtension) : '—' }}</span>
+                    <span class="doc-info">
+                      <span class="doc-name truncate">{{ doc.name }}</span>
+                      @if (doc.description) {
+                        <span class="muted truncate">{{ doc.description }}</span>
+                      }
+                    </span>
+                  </a>
+                </td>
+                <td><span class="badge" [class]="'badge-' + doc.category">{{ doc.category | categoryLabel }}</span></td>
+                <td class="col-file">
+                  @if (doc.fileName) {
+                    <span class="muted">{{ doc.fileSize | fileSize }}</span>
+                  } @else {
+                    <span class="muted">Sin archivo</span>
+                  }
+                </td>
+                <td class="col-date muted">{{ doc.createdAt | date: 'd MMM y' }}</td>
+                <td class="col-actions">
+                  <div class="actions">
+                    @if (doc.fileName) {
+                      <button type="button" class="icon-btn" title="Descargar" aria-label="Descargar archivo"
+                        [disabled]="downloadingId() === doc.id" (click)="download(doc)">
+                        @if (downloadingId() === doc.id) { <span class="spinner"></span> } @else { <app-icon name="download" /> }
+                      </button>
+                    }
+                    <a class="icon-btn" [routerLink]="['/documents', doc.id, 'edit']" title="Editar" aria-label="Editar documento">
+                      <app-icon name="edit" />
+                    </a>
+                    <button type="button" class="icon-btn danger" title="Eliminar" aria-label="Eliminar documento" (click)="toDelete.set(doc)">
+                      <app-icon name="trash" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <footer class="list-footer muted">
+        Mostrando {{ filtered().length }} de {{ documents().length }} documentos
+      </footer>
+    }
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="toDelete() !== null"
+  [busy]="deleting()"
+  title="Eliminar documento"
+  [message]="'Se eliminará «' + (toDelete()?.name ?? '') + '» y su archivo adjunto. Esta acción no se puede deshacer.'"
+  (confirmed)="confirmDelete()"
+  (cancelled)="toDelete.set(null)"
+/>

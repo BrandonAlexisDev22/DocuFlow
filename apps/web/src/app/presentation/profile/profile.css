@@ -1,0 +1,87 @@
+.profile-page {
+  max-width: 720px;
+}
+
+.alert {
+  align-items: center;
+}
+
+.grow {
+  flex: 1;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.identity-text {
+  min-width: 0;
+}
+
+.identity h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--navy-900);
+  overflow-wrap: anywhere;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--navy-900);
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.details {
+  margin: 0;
+}
+
+.details div {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.details div:last-child {
+  border-bottom: 0;
+}
+
+.details dt {
+  color: var(--gray-500);
+}
+
+.details dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.session {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (max-width: 520px) {
+  .details div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .session .btn {
+    width: 100%;
+  }
+}

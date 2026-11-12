@@ -1,0 +1,77 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 48px;
+  background: var(--navy-900);
+  color: #c7d2e5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  background: var(--accent-600);
+  color: var(--white);
+}
+
+.brand-copy h2 {
+  max-width: 420px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+.brand-copy p {
+  max-width: 420px;
+  margin-top: 14px;
+  font-size: 15px;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.features .icon {
+  color: #7aa7ff;
+}
+
+.brand-footer {
+  font-size: 12px;
+  color: #8a9ab5;
+}
+
+@media (max-width: 900px) {
+  :host {
+    padding: 20px 24px;
+  }
+
+  .brand-copy,
+  .brand-footer {
+    display: none;
+  }
+}

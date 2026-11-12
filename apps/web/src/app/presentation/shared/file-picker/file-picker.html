@@ -1,0 +1,33 @@
+<input #fileInput type="file" class="sr-only" [accept]="accept" (change)="onInputChange($event)" tabindex="-1" />
+
+@if (file(); as selected) {
+  <div class="selected">
+    <span class="file-tag">{{ extension(selected.name) }}</span>
+    <div class="selected-info">
+      <span class="truncate selected-name">{{ selected.name }}</span>
+      <span class="muted">{{ formatSize(selected.size) }}</span>
+    </div>
+    <button type="button" class="icon-btn" (click)="clear()" [disabled]="disabled()" aria-label="Quitar archivo">
+      <app-icon name="close" />
+    </button>
+  </div>
+} @else {
+  <button
+    type="button"
+    class="dropzone"
+    [class.dragging]="dragging()"
+    [disabled]="disabled()"
+    (click)="browse()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="dragging.set(false)"
+    (drop)="onDrop($event)"
+  >
+    <app-icon name="upload" />
+    <span><strong>Haz clic para seleccionar</strong> o arrastra un archivo</span>
+    <span class="muted">PDF, DOC o DOCX · Máximo 10 MB</span>
+  </button>
+}
+
+@if (error(); as message) {
+  <p class="field-error" role="alert">{{ message }}</p>
+}
