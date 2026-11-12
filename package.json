@@ -1,0 +1,17 @@
+
+{
+  "name": "docuflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Document management platform",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=apps/api",
+    "dev:web": "npm run start --workspace=apps/web",
+    "build:api": "npm run build --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web"
+  }
+}
