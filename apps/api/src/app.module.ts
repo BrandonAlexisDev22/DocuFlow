@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { PrismaModule } from './infrastructure/database/prisma.module';
 import { HealthController } from './presentation/health/health.controller';
-
+import { UsersModule } from './presentation/users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -12,6 +12,7 @@ import { HealthController } from './presentation/health/health.controller';
       envFilePath: '.env',
     }),
     PrismaModule,
+    UsersModule,
   ],
   controllers: [HealthController],
   providers: [],
