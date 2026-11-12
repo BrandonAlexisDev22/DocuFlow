@@ -137,6 +137,28 @@ export class DocumentService {
     }
   }
 
+  // Generate secure download URL
+  async getDownloadUrl(id: number, userId: number) {
+    const document = await this.findById(id, userId);
+
+    if (!document.publicId || !document.fileName) {
+      throw new NotFoundException(
+        'Este documento no tiene un archivo adjunto',
+      );
+    }
+
+    const downloadUrl =
+      await this.cloudinaryService.generateDownloadUrl(
+        document.publicId,
+        document.fileName,
+      );
+
+    return {
+      downloadUrl,
+      expiresIn: 300,
+    };
+  }
+
   // Delete document and associated Cloudinary file
   async remove(id: number, userId: number) {
     const document = await this.findById(id, userId);
