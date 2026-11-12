@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { DocumentsService } from '../../application/documents/documents.service';
+import { DocumentService } from '../../application/documents/documents.service';
 import { JwtAuthGuard } from '../../infrastructure/security/guards/jwt-auth.guard';
 
 import { CreateDocumentDto } from './dto/create-document.dto';
@@ -29,7 +29,7 @@ type AuthenticatedRequest = {
 @UseGuards(JwtAuthGuard)
 export class DocumentsController {
   constructor(
-    private readonly documentsService: DocumentsService,
+    private readonly documentsService: DocumentService,
   ) {}
 
   @Post()

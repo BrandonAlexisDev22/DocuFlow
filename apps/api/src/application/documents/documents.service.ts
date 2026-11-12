@@ -2,9 +2,16 @@
 import {
   Injectable,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 
 import { PrismaService } from '../../infrastructure/database/prisma.service';
+
+import {
+  CloudinaryService,
+  UploadFileInput,
+} from '../../infrastructure/storage/cloudinary.service';
+
 import { DocumentCategory } from '../../generated/prisma/client';
 
 export type CreateDocumentInput = {
@@ -20,9 +27,10 @@ export type UpdateDocumentInput = {
 };
 
 @Injectable()
-export class DocumentsService {
+export class DocumentService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   // Create document
@@ -59,7 +67,9 @@ export class DocumentsService {
     });
 
     if (!document) {
-      throw new NotFoundException('Documento no encontrado');
+      throw new NotFoundException(
+        'Documento no encontrado',
+      );
     }
 
     return document;
@@ -82,9 +92,60 @@ export class DocumentsService {
     });
   }
 
-  // Delete document
+  // Upload document file
+  async uploadFile(
+    id: number,
+    userId: number,
+    file: UploadFileInput,
+  ) {
+    const document = await this.findById(id, userId);
+
+    if (document.publicId) {
+      throw new ConflictException(
+        'Este documento ya tiene un archivo adjunto',
+      );
+    }
+
+    const uploadedFile =
+      await this.cloudinaryService.uploadFile(file);
+
+    try {
+      return await this.prisma.document.update({
+        where: {
+          id,
+          userId,
+        },
+        data: {
+          fileUrl: uploadedFile.fileUrl,
+          publicId: uploadedFile.publicId,
+          fileName: uploadedFile.fileName,
+          fileType: uploadedFile.fileType,
+          fileSize: uploadedFile.fileSize,
+        },
+      });
+    } catch (error) {
+      // Clean up Cloudinary if the database update fails.
+      try {
+        await this.cloudinaryService.deleteFile(
+          uploadedFile.publicId,
+        );
+      } catch {
+        // Preserve the original database error.
+      }
+
+      throw error;
+    }
+  }
+
+  // Delete document and associated Cloudinary file
   async remove(id: number, userId: number) {
-    await this.findById(id, userId);
+    const document = await this.findById(id, userId);
+
+    if (document.publicId) {
+      await this.cloudinaryService.deleteFile(
+        document.publicId,
+      );
+    }
 
     return this.prisma.document.delete({
       where: {
