@@ -22,7 +22,6 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   documents Document[]
 }
 
@@ -31,13 +30,11 @@ model Document {
   name        String
   description String?
   category    DocumentCategory
-
   fileUrl  String?
   publicId String?
   fileName String?
   fileType String?
   fileSize Int?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
